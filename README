@@ -1,4 +1,35 @@
-Our testing system broke once we introduced VIEWS and STORED PROCEDURES to our database (a legacy MS SQL server for production, MySQL 5 for development and tests). Neither schema format (:ruby or :sql) plays nicely when exporting the schema for the database, so we opted for a workaround. The workaround runs our migration scripts to ready the test database if you set schema format to :migrate (in config/environment.rb). We were able to leverage the existing rake tasks for purging the test database, and loading the migration scripts--and we now have an excellent platform for testing our "complex" schema based app. The patch was developed by Andre Price under the direction of Jonathan Siegel at ELC Technologies.
+MigrateTestDB
+by 
+Jonathan Siegel (jsiegel@elctech.com)
+ELC Technologies (http://elctech.com/)
+===============
+
+MigrateTestDB plugin was created to allow migrations to be used to generate the test database in rake test commands. This is helpful for consistently testing migrations, but was absolutely for the following use case we encountered:
+
+Using VIEWS or STORED PROCEDURES. We were using a legacy database (a legacy MS SQL server for production, MySQL 5 for development and tests). Neither schema format (:ruby or :sql) plays nicely when exporting the schema for the database. They do not output the VIEWS nor STORED PROCEDURES so all of our tests requiring this functionality failed.
+
+MigrateTestDB deletes Rails' default test:db:prepare task which only supports schema_format = :sql and schema_format = :ruby. The replacement task works identically (as of Rails 1.2.3) to Rails default task; however, specifying a schema_format = :migrate will cause a new preparation task to run within the plugin. The task runs migration scripts to ready the test database. The plugin leverages the existing rake tasks for purging the test database, and loading the migration scripts--so the plugin code is mainly a reglue of exisiting Rails default functionality. 
+
+This code was originally developed as a patch for railsties/lib/rake/databases.rake. The patch was developed by Andre Price under the direction of Jonathan Siegel at ELC Technologies. It was submitted for inclusion to Rails core and received the response:
 
 http://dev.rubyonrails.org/ticket/4814#comment:1>
-This is a great idea for a plugin. If you release it and most Rails developers begin using it then it might be a good candidate for core. Until then I'm going to close this ticket.
+"This is a great idea for a plugin. If you release it and most Rails developers begin using it then it might be a good candidate for core. Until then I'm going to close this ticket."
+
+The patch was converted to a plugin by Jonathan Siegel.
+
+
+Usage
+=====
+
+1.  Install the plugin:
+  ./script/install plugin https://svn.elctech.com/public/migrate_test_db
+
+  or with external SVN reference:
+
+  ./script/install plugin -x https://svn.elctech.com/public/migrate_test_db
+
+2. Edit config/environment.rb:
+
+  config.active_record.schema_format = :migrate
+
+3.  That's it!
