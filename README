@@ -22,14 +22,14 @@ Usage
 =====
 
 1.  Install the plugin:
-  ./script/install plugin https://svn.elctech.com/public/migrate_test_db
+  ./script/install plugin http://svn.elctech.com/svn/public/plugins/migrate_test_db
 
   or with external SVN reference:
 
-  ./script/install plugin -x https://svn.elctech.com/public/migrate_test_db
+  ./script/install plugin -x http://svn.elctech.com/svn/public/plugins/migrate_test_db
 
 2. Edit config/environment.rb:
 
   config.active_record.schema_format = :migrate
 
-3.  That's it!
+3.  That's it! The next time you run rake (or any rake task that depends on the test:db:prepare task) you'll see that your test database is being generated from your migrations.
